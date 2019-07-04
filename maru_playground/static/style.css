@@ -1,0 +1,15 @@
+h2 {
+    color: green;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.inline-div {
+    display: inline-block;
+}
+.inline-txtarea {
+    resize: none;
+    border: 2px solid red;
+    color: blue;
+    background-color: black;
+    font-family: 'Courier New', Courier, monospace;
+}

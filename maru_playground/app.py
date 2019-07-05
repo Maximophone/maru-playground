@@ -6,7 +6,7 @@ app = Flask(__name__, template_folder="static")
 MARU_PATH = "./maru"
 
 def run_code(code: str) -> str:
-    return subprocess.check_output([MARU_PATH, "-c", code])
+    return subprocess.check_output([MARU_PATH, "--show-last", "-c", code])
 
 @app.route('/')
 def send_index():

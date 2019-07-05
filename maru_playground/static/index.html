@@ -1,17 +1,25 @@
 <html>
     <head>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/default.min.css">
         <link rel="stylesheet" href="static/style.css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
     </head>
     <body>
-        <h2>The MARU Playground</h2>
-        <div class="inline-div">
-        <form action="/" method="post">
-            <textarea rows="30" cols="50" name="code" class="inline-txtarea">{{input}}</textarea>
-            <input type="submit" value="RUN">
-        </form>
-        </div>
-        <div class="inline-div">
-        <textarea rows="30" cols="50" name="code" class="inline-txtarea">{{output}}</textarea>
+        <div class="everything">
+            <h2>The MARU Playground</h2>
+            <form action="/" method="post">
+                
+                <div class="inline-div">
+                        <pre><code>
+                    <textarea rows="30" cols="50" name="code" class="inline-txtarea">{{input}}</textarea>
+                </code></pre>
+                </div>
+                
+                <input type="submit" value="RUN">
+                <div class="inline-div">
+                        <textarea rows="30" cols="50" class="inline-txtarea">{{output}}</textarea>
+                </div>
+            </form>
         </div>
     </body>
 </html>

@@ -3,9 +3,12 @@ import subprocess
 
 app = Flask(__name__, template_folder="static")
 
-MARU_PATH = "../../maru/maru"
+MARU_DIR = "../../maru"
+MARU_PATH = f"{MARU_DIR}/maru"
+MARU_EXAMPLES_DIR = f"{MARU_DIR}/examples"
+MARU_DEMO_PATH = f"{MARU_EXAMPLES_DIR}/intro_to_maru.mu"
 
-with open("demo_program.mu") as f:
+with open(MARU_DEMO_PATH) as f:
     DEFAULT_CODE = f.read()
 
 def run_code(code: str) -> str:

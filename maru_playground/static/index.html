@@ -1,8 +1,7 @@
 <html>
     <head>
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/styles/default.min.css">
         <link rel="stylesheet" href="static/style.css">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </head>
     <body>
         <div class="everything">
@@ -10,9 +9,8 @@
             <form action="/" method="post">
                 
                 <div class="inline-div">
-                        <pre><code>
-                    <textarea rows="30" cols="50" name="code" class="inline-txtarea">{{input}}</textarea>
-                </code></pre>
+                    <div id="editor" name="code">{{input}}</div>
+                    <textarea name="code" style="display: none;">{{input}}</textarea>
                 </div>
                 
                 <input type="submit" value="RUN">
@@ -21,5 +19,16 @@
                 </div>
             </form>
         </div>
+        
+        <script src="static/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script>
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/monokai");
+            editor.session.setMode("ace/mode/maru");
+            var textarea = $('textarea[name="code"]')[0];
+            editor.getSession().on("change", function () {
+                textarea.value = editor.getSession().getValue();
+            });
+        </script>
     </body>
 </html>

@@ -7,11 +7,31 @@ MARU_PATH = "../maru/maru"
 
 DEFAULT_CODE = """# This is a MARU program.
 
-hello = "Hello";
-world = "World";
-hello_world = hello + " " + world + "!";
+# Use the printl built in function to print strings.
+printl("Hello World!");
 
-printl(hello_world); 
+# You can also use print if you want to print strings on the same line.
+print("Hello ");
+print("World!");
+
+# An empty printl goes to the next line
+printl();
+
+# You can use repr to represent maru objects that are not strings.
+print("Printing a number: ");
+repr(2);
+
+# In MARU, the syntax to create variables is simple:
+my_var = 1;
+a_string_variable = "this is a string";
+a_boolean = true;
+
+# In MARU, everything is an expression, even declaring a variable! 
+# So you can do things like this:
+a = (b = 1);
+repr(b);
+repr(a);
+
 """
 
 def run_code(code: str) -> str:

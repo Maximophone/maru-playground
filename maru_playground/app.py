@@ -3,9 +3,9 @@ import subprocess
 
 app = Flask(__name__, template_folder="static")
 
-MARU_PATH = "../maru/maru"
+MARU_PATH = "../../maru/maru"
 
-with open("maru_playground/demo_program.mu") as f:
+with open("demo_program.mu") as f:
     DEFAULT_CODE = f.read()
 
 def run_code(code: str) -> str:
@@ -23,5 +23,5 @@ def compute():
     return render_template("index.html", input=code, output=output)
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", 5000, True)
+    app.run("0.0.0.0", 5000, False)
 

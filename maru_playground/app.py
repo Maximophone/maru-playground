@@ -49,8 +49,8 @@ def compute():
     log_code("__DEFAULT_PROGRAM__" if is_default else code)
     try:
         output = run_code(code).decode()
-    except UnicodeDecodeError:
-        output = "Unicode Decode Error"
+    except Exception as e:
+        output = f"Server Exception when executing MARU program: \n\t{e}"
     log_output("__DEFAULT_OUTPUT__" if is_default else output)
     return render_template("index.html", input=code, output=output)
 

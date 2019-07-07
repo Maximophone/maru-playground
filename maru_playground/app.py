@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify, Response
 import subprocess
 import datetime as dt
+from typing import List
+import multiprocessing
 
 app = Flask(__name__, template_folder="static")
 
@@ -12,11 +14,32 @@ MARU_DEMO_PATH = f"{MARU_EXAMPLES_DIR}/intro_to_maru.mu"
 LOGS_PATH = "../code.log"
 LOG_LINE_LEN = 50
 
+TIMEOUT = 1
+
 with open(MARU_DEMO_PATH) as f:
     DEFAULT_CODE = f.read()
 
+manager = multiprocessing.Manager()
+
+def apply_with_timeout(f, timeout, *args, **kwargs):
+    return_dict = manager.dict()
+    def wrapped(*args, **kwargs):
+        return_dict["ret"] = f(*args, **kwargs)
+
+    p = multiprocessing.Process(target=wrapped, args=args, kwargs=kwargs)
+    p.start()
+    p.join(timeout)
+    if(p.is_alive()):
+        p.terminate()
+        raise TimeoutError
+    return return_dict.get("ret")
+
+def run_cmd(cmd: List[str]) -> str:
+    return subprocess.check_output(cmd)
+
 def run_code(code: str) -> str:
-    return subprocess.check_output([MARU_PATH, "--show-last", "-c", code])
+    cmd = [MARU_PATH, "--show-last", "-c", code]
+    return run_cmd(cmd).decode()
 
 def write_line(f):
     f.write("-"*LOG_LINE_LEN + "\n")
@@ -48,7 +71,9 @@ def compute():
     is_default = code == DEFAULT_CODE
     log_code("__DEFAULT_PROGRAM__" if is_default else code)
     try:
-        output = run_code(code).decode()
+        output = apply_with_timeout(run_code, TIMEOUT, (code))
+    except TimeoutError:
+        output = f"Server Timeout Error: MARU program took longer than {TIMEOUT} second to run and was killed"
     except Exception as e:
         output = f"Server Exception when executing MARU program: \n\t{e}"
     log_output("__DEFAULT_OUTPUT__" if is_default else output)

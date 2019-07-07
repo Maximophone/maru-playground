@@ -47,7 +47,10 @@ def compute():
     code = request.form["code"].replace("\r", "")
     is_default = code == DEFAULT_CODE
     log_code("__DEFAULT_PROGRAM__" if is_default else code)
-    output = run_code(code).decode()
+    try:
+        output = run_code(code).decode()
+    except UnicodeDecodeError:
+        output = "Unicode Decode Error"
     log_output("__DEFAULT_OUTPUT__" if is_default else output)
     return render_template("index.html", input=code, output=output)
 

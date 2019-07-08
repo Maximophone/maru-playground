@@ -24,7 +24,10 @@ manager = multiprocessing.Manager()
 def apply_with_timeout(f, timeout, *args, **kwargs):
     return_dict = manager.dict()
     def wrapped(*args, **kwargs):
-        return_dict["ret"] = f(*args, **kwargs)
+        try:
+            return_dict["ret"] = f(*args, **kwargs)
+        except Exception as e:
+            return_dict["ret"] = e
 
     p = multiprocessing.Process(target=wrapped, args=args, kwargs=kwargs)
     p.start()
@@ -32,6 +35,8 @@ def apply_with_timeout(f, timeout, *args, **kwargs):
     if(p.is_alive()):
         p.terminate()
         raise TimeoutError
+    if isinstance(return_dict.get("ret"), Exception):
+        raise return_dict.get("ret")
     return return_dict.get("ret")
 
 def run_cmd(cmd: List[str]) -> str:

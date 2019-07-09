@@ -14,9 +14,14 @@ h2 {
     text-align: center;
 }
 
+.buttons-div {
+    display: inline-block;
+    width: 10%;
+}
+
 .inline-div {
     display: inline-block;
-    width: 45%;
+    width: 40%;
     box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.4);
 }
 

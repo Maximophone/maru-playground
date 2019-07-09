@@ -24,7 +24,11 @@ manager = multiprocessing.Manager()
 def apply_with_timeout(f, timeout, *args, **kwargs):
     return_dict = manager.dict()
     def wrapped(*args, **kwargs):
-        return_dict["ret"] = f(*args, **kwargs)
+        try:
+            return_dict["ret"] = f(*args, **kwargs)
+        except Exception as e:
+            return_dict["exc"] = e
+            raise(e)
 
     p = multiprocessing.Process(target=wrapped, args=args, kwargs=kwargs)
     p.start()
@@ -32,13 +36,18 @@ def apply_with_timeout(f, timeout, *args, **kwargs):
     if(p.is_alive()):
         p.terminate()
         raise TimeoutError
+    if(return_dict.get("exc")):
+        raise(return_dict.get("exc"))
     return return_dict.get("ret")
 
 def run_cmd(cmd: List[str]) -> str:
     return subprocess.check_output(cmd)
 
-def run_code(code: str) -> str:
-    cmd = [MARU_PATH, "--show-last", "-c", code]
+def run_code(code: str, test: bool) -> str:
+    if test:
+        cmd = [MARU_PATH, "--test", "--show-last", "-c", code]
+    else:
+        cmd = [MARU_PATH, "--show-last", "-c", code]
     return run_cmd(cmd).decode()
 
 def write_line(f):
@@ -58,7 +67,7 @@ def log_output(output: str):
     with open(LOGS_PATH, 'a') as f:
         f.write("OUTPUT: \n")
         write_line(f)
-        f.write(output +"\n")
+        f.write(str(output) +"\n")
         write_line(f)
 
 @app.route('/')
@@ -68,12 +77,15 @@ def send_index():
 @app.route("/", methods=["POST"])
 def compute():
     code = request.form["code"].replace("\r", "")
+    test = "test" in request.form
     is_default = code == DEFAULT_CODE
     log_code("__DEFAULT_PROGRAM__" if is_default else code)
     try:
-        output = apply_with_timeout(run_code, TIMEOUT, (code))
+        output = apply_with_timeout(run_code, TIMEOUT, code, test)
     except TimeoutError:
         output = f"Server Timeout Error: MARU program took longer than {TIMEOUT} second to run and was killed"
+    except subprocess.CalledProcessError as e:
+        output = f"Maru Executable Error: \n\t{e.output}"
     except Exception as e:
         output = f"Server Exception when executing MARU program: \n\t{e}"
     log_output("__DEFAULT_OUTPUT__" if is_default else output)
